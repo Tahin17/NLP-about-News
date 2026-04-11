@@ -1,0 +1,140 @@
+Done — I prepared these for you:
+
+[CSE440 project notebook](sandbox:/mnt/data/CSE440_news_classification_project_notebook.ipynb)
+
+[Outline and EDA summary](sandbox:/mnt/data/CSE440_project_outline_and_EDA_summary.md)
+
+I built the notebook around the exact CSE440 project requirements from your PDF: extensive EDA, three preprocessing versions, TF-IDF with one ML model and one deep neural network, skip-gram with all required recurrent models, and reporting with accuracy, macro F1, confusion matrix, and classification report. I also kept explanations in markdown cells rather than inline code comments, which matches the notebook instructions in the PDF. 
+
+One important note: among the accessible files here, I could not find actual CSE440 lab1/lab2/lab3 NLP reference notebooks or code. The extra retrievable “lab” files were from a different compiler-design course, so I did not use those as NLP references. I aligned everything directly to the CSE440 project PDF and your train/test datasets instead.
+
+## Recommended workflow
+
+1. Load only the assigned dataset and keep the test set untouched until the very end.
+2. Perform EDA on the raw training data first.
+3. Build exactly three text versions:
+
+   * no preprocessing
+   * extreme preprocessing
+   * optimum preprocessing based on EDA
+4. Split only the training set into train/validation.
+5. Run TF-IDF experiments:
+
+   * one ML model: Logistic Regression in the notebook
+   * one DNN: TF-IDF + dimensionality reduction + dense network
+6. Run skip-gram experiments:
+
+   * SimpleRNN
+   * GRU
+   * LSTM
+   * Bidirectional SimpleRNN
+   * Bidirectional GRU
+   * Bidirectional LSTM
+7. Log every run with preprocessing type, model, hyperparameters, validation accuracy, and macro F1.
+8. Pick the best configuration from validation results, retrain on full training data, and evaluate once on the test set.
+9. Use the notebook’s final comparison tables and plots directly in your report. 
+
+## Main EDA findings from your actual CSVs
+
+* Train size: **104,763** rows
+* Test size: **12,000** rows
+* Classes: **4**
+* Missing headlines: **0**
+* Missing labels: **0**
+
+Class balance:
+
+* **Training** is imbalanced: Science and Technology **34.77%**, Sports **32.62%**, Business **17.72%**, World News **14.89%**
+* **Test** is perfectly balanced: **25% each**
+
+Text quality issues:
+
+* **100%** of rows contain HTML-like wrappers or the constant prefix **“News Headlines:”**
+* **32.16%** of training rows contain broken entities like `#39;`, `quot;`, `amp;`, `#151;`
+* **10.48%** of training rows contain backslash artifacts
+
+Length:
+
+* Average cleaned text length is about **38.38 words** and **229.42 characters**
+* So these are not just tiny headlines; they behave more like **headline + snippet**
+
+Duplicates:
+
+* Training has **31,208 exact duplicate rows**
+* Test has **0 exact duplicate rows**
+* Duplicates are heavily concentrated in:
+
+  * **Science and Technology**: about **74.15%** of rows belong to duplicate groups
+  * **Sports**: about **71.81%** of rows belong to duplicate groups
+* Business and World News do not show this same duplicate pattern
+
+Source bias:
+
+* Reuters/AP/AFP style source tags appear often and are class-dependent
+* That means publisher/source words may leak label signal that is not really semantic topic understanding
+
+Why this matters for preprocessing:
+
+* Keep **numbers** in the optimum version, because they are common and likely meaningful for Business and Sports
+* Remove **HTML**, the constant prefix, broken entities, and source tags
+* Avoid aggressive stemming in the optimum version, because the text is short-to-medium length and likely benefits from preserving named entities and original word forms
+
+## Best “optimum preprocessing” choice from the EDA
+
+For your **optimum preprocessing** version, I recommend:
+
+* remove HTML tags
+* remove the constant `News Headlines:` prefix
+* normalize broken entities
+* fix backslash artifacts
+* lowercase the text
+* remove Reuters/AP/AFP source tags
+* keep digits
+* keep most stopwords
+* do **not** stem
+
+That gives you a strong contrast against:
+
+* **no preprocessing** = raw text
+* **extreme preprocessing** = lowercase + cleanup + stopword removal + stemming + alphabetic token filtering
+
+## What is already inside the notebook
+
+The notebook has separate markdown/code cells for:
+
+* dataset loading and inspection
+* label distribution plots
+* raw text inspection
+* data quality checks
+* duplicate analysis
+* length analysis
+* class-wise artifact statistics
+* top words and bigrams
+* word clouds
+* three preprocessing pipelines
+* validation split and label encoding
+* TF-IDF helpers
+* Logistic Regression tuning
+* optional Naive Bayes / Random Forest baselines
+* TF-IDF deep neural network
+* skip-gram training with `Word2Vec(sg=1)`
+* sequence preparation
+* SimpleRNN / GRU / LSTM / BiRNN / BiGRU / BiLSTM builders
+* experiment logging
+* result comparison tables
+* final test evaluation helper
+* report-writing checklist
+
+## Model choices I used in the notebook
+
+I selected **Logistic Regression** as the main ML baseline because it is usually a strong TF-IDF baseline for multiclass text classification and is much more reliable than Random Forest on sparse text data. The notebook still includes optional cells for Naive Bayes and Random Forest so you can add extra comparisons.
+
+For the TF-IDF deep neural network, I used **TruncatedSVD before the dense network** so the input becomes practical for a multi-layer DNN while still respecting the “TF-IDF + DNN” requirement.
+
+For skip-gram, I used **gensim Word2Vec with `sg=1`**, trained on your own training corpus, which keeps the setup course-aligned and self-contained.
+
+## Honest limitation
+
+I gave you the full notebook structure and the full code cells, and I extracted the EDA findings above from your actual dataset. I did **not** claim final benchmark numbers for all long neural-model runs here, because those experiments are heavy and your course also wants the notebook to show output logs. The long training cells are already in the notebook so you can run them end-to-end in your environment and keep the outputs for submission.
+
+Upload the actual CSE440 lab1–3 reference notebooks/files and I’ll reshape this notebook to mirror your faculty’s exact lab style.
