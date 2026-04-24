@@ -1,8 +1,4 @@
-CSE440 News Project - Revised Lab-Style Version
-
-Files:
-- CSE440_News_Project_LabStyle.ipynb
-- CSE440_News_Project_LabStyle.py
+CSE440 News Project
 
 How to run:
 1. Put the notebook/script in the same folder as:
